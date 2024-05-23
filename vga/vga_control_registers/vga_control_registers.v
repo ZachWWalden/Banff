@@ -14,7 +14,7 @@
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
+ * as published by the Free Software Foundation; either version 3
  * of the License, or (at your option) any later version.
  *
  * This program is distributed in the hope that it will be useful,
@@ -43,6 +43,7 @@ module vga_control_registers
 	output reg [DATA_WIDTH - 1:0] data_bus_out,
 	input [ADDR_BUS_WIDTH - 1:0] addr_bus,
 	input data_wen,
+	output reg mux_sel,
 	output [(NUM_VGA_CONT_REG * DATA_WIDTH) - 1:0] control_reg_out //Total Number of 8 bit control registers.
 );
 
@@ -55,6 +56,7 @@ module vga_control_registers
 		begin
 			vga_control_registers <= 0;
 			data_bus_out <= 0;
+			mux_sel <= 0;
 		end
 		else
 		begin
@@ -64,11 +66,17 @@ module vga_control_registers
 				if(data_wen == 1'b1)
 				begin
 					vga_control_registers[addr_bus[3:0]] <= data_bus;
+					mux_sel <= 1'b0;
 				end
 				else
 				begin
 					data_bus_out <= vga_control_registers[addr_bus[3:0]];
+					mux_sel <= 1'b1;
 				end
+			end
+			else
+			begin
+				mux_sel <= 0;
 			end
 		end
 	end
